@@ -1,0 +1,26 @@
+.dataset-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.dataset-table th,
+.dataset-table td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.dataset-table td.highlight {
+	background-color: #4a90e2;
+	color: white;
+	transition: background-color 0.3s ease;
+}
+.select-area {
+	width: 20px;
+	cursor: pointer;
+	background-color: #3700ff;
+}
+
+.highlight {
+	background-color: rgba(255, 0, 0, 0.3);
+}
