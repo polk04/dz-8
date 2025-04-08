@@ -35,13 +35,14 @@ const DataSet = () => {
 	}
 
 	const handleAdd = () => {
+		const lastId = Math.max(...data.map(item => item.id), 0) // Находим максимальный id
 		const newComment = {
 			postId: 1,
-			id: Date.now(),
+			id: lastId + 1, // Новый id, увеличиваем максимальный на 1
 			name: 'Новый комментарий',
 			body: 'Текст комментария',
 		}
-		setData(prev => [newComment, ...prev])
+		setData(prev => [...prev, newComment]) // Добавляем новую запись в конец
 		fetch(API_URL, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -52,6 +53,8 @@ const DataSet = () => {
 				setData(prev => prev.filter(item => item.id !== newComment.id))
 			)
 	}
+	
+	
 
 	const handleDelete = () => {
 		const sortedIndexes = Array.from(selectedRows).sort((a, b) => b - a)
