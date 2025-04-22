@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import './DataSet.css'
 
-const API_URL = 'https://jsonplaceholder.typicode.com/comments'
+const API_SOURCE_URL = 'https://jsonplaceholder.typicode.com/comments'
+const API_LOCAL_URL = 'http://localhost:5000/comments'
 
 const DataSet = () => {
 	const [data, setData] = useState([])
@@ -11,9 +12,9 @@ const DataSet = () => {
 	const [editComment, setEditComment] = useState('')
 
 	useEffect(() => {
-		fetch(API_URL)
+		fetch(API_SOURCE_URL)
 			.then(response => response.json())
-			.then(data => setData(data.slice(0, 10)))
+			.then(data => setData(data.slice(0, 100)))
 			.catch(error => console.error('Ошибка загрузки данных:', error))
 	}, [])
 
@@ -35,26 +36,28 @@ const DataSet = () => {
 	}
 
 	const handleAdd = () => {
-		const lastId = Math.max(...data.map(item => item.id), 0) // Находим максимальный id
+		// Находим максимальный ID в текущих данных
+		const maxId = data.length > 0 ? Math.max(...data.map(item => item.id)) : 0
+		const newId = maxId + 1
+		
 		const newComment = {
 			postId: 1,
-			id: lastId + 1, // Новый id, увеличиваем максимальный на 1
+			id: newId,
 			name: 'Новый комментарий',
 			body: 'Текст комментария',
 		}
-		setData(prev => [...prev, newComment]) // Добавляем новую запись в конец
-		fetch(API_URL, {
+		
+		// Добавляем в конец массива
+		setData(prev => [...prev, newComment])
+		
+		fetch(API_LOCAL_URL, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(newComment),
+		}).catch(() => {
+			setData(prev => prev.filter(item => item.id !== newComment.id))
 		})
-			.then(response => response.json())
-			.catch(() =>
-				setData(prev => prev.filter(item => item.id !== newComment.id))
-			)
 	}
-	
-	
 
 	const handleDelete = () => {
 		const sortedIndexes = Array.from(selectedRows).sort((a, b) => b - a)
@@ -63,7 +66,9 @@ const DataSet = () => {
 
 		sortedIndexes.forEach(rowIndex => {
 			const itemToDelete = data[rowIndex]
-			fetch(`${API_URL}/${itemToDelete.id}`, { method: 'DELETE' }).catch(() =>
+			fetch(`${API_LOCAL_URL}/${itemToDelete.id}`, {
+				method: 'DELETE',
+			}).catch(() =>
 				setData(prev => [...prev, itemToDelete])
 			)
 		})
@@ -88,7 +93,7 @@ const DataSet = () => {
 		setData(updatedData)
 		setEditingRow(null)
 
-		fetch(`${API_URL}/${updatedData[rowIndex].id}`, {
+		fetch(`${API_LOCAL_URL}/${updatedData[rowIndex].id}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ name: editText, body: editComment }),
