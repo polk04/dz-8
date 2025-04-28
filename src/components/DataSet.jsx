@@ -12,9 +12,9 @@ const DataSet = () => {
 	const [editComment, setEditComment] = useState('')
 
 	useEffect(() => {
-		fetch(API_SOURCE_URL)
+		fetch(API_LOCAL_URL)
 			.then(response => response.json())
-			.then(data => setData(data.slice(0, 100)))
+			.then(data => setData(data.slice(0, 500)))
 			.catch(error => console.error('Ошибка загрузки данных:', error))
 	}, [])
 
